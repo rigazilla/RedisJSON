@@ -1435,7 +1435,7 @@ def testUnicodeCharacters(env):
 def test_promote_u64_to_f64(env):
     r = env
     i64max = 2 ** 63 - 1
-    
+
     # i64 + i64 behaves normally
     r.expect('JSON.SET', 'num', '$', 0).ok()
     r.expect('JSON.TYPE', 'num', '$').equal(['integer'])

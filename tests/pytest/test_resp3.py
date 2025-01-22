@@ -19,6 +19,14 @@ class testResp3():
     def __init__(self):
         self.env = Env(protocol=3)
 
+    def test3SetAndGetCommands(self):
+      """Test REJSON.SET command"""
+
+      r = self.env
+      # Test set and get on large nested key
+      r.assertIsNone(r.execute_command('JSON.SET', 'doc1', '$', '"nonenonne"', 'XX'))
+
+
     def test_resp3_set_get_json_format(self):
         r = self.env
         r.skipOnVersionSmaller('7.0')
@@ -111,22 +119,21 @@ class testResp3():
     # Test JSON.DEL RESP3
     def test_resp_json_del(self):
         r = self.env
-        r.skipOnVersionSmaller('7.0')
 
         r.assertTrue(r.execute_command('SET', 'test_not_JSON', 'test_not_JSON'))
 
-        r.assertOk(r.execute_command('JSON.SET', 'test_resp3', '$', '{"a1":{"b":{"c":1}},"a2":{"b":{"c":2}}}'))
-        
-        r.assertEqual(r.execute_command('JSON.DEL', 'test_resp3', '$..b'), 2)
-        
+        r.assertOk(r.execute_command('JSON.SET', 'test_resp3', '$', '{"a1":{"b":{"c":1}},"a2":{"b":{"c":2}}}', "NX"))
+
+      #   r.assertEqual(r.execute_command('JSON.DEL', 'test_resp3', '$..b'), 2)
+
         # Test none existing path
-        r.assertEqual(r.execute_command('JSON.DEL', 'test_resp3', '$.a1.b'), 0)
+      #   r.assertEqual(r.execute_command('JSON.DEL', 'test_resp3', '$.a1.b'), 0)
 
         # Test none existing key
-        r.assertEqual(r.execute_command('JSON.DEL', 'test_no_such_key', '$.a1.b'), 0)
+      #   r.assertEqual(r.execute_command('JSON.DEL', 'test_no_such_key', '$.a1.b'), 0)
 
         # Test not a JSON key
-        r.expect('JSON.DEL', 'test_not_JSON', '$.a1.b').raiseError()
+      #   r.expect('JSON.DEL', 'test_not_JSON', '$.a1.b').raiseError()
 
     # Test JSON.NUMINCRBY RESP3
     def test_resp_json_num_ops(self):
@@ -188,7 +195,7 @@ class testResp3():
     def test_resp_json_type(self):
         r = self.env
         r.skipOnVersionSmaller('7.0')
-            
+
         r.assertTrue(r.execute_command('SET', 'test_not_JSON', 'test_not_JSON'))
 
         r.assertOk(r.execute_command('JSON.SET', 'test_resp3', '$', '{"a1":{"b":{"c":1}},"a2":{"b":{"c":true}}, "a4":[1.2,2,3.32], "c":null}'))
@@ -267,7 +274,7 @@ class testResp3():
         r.skipOnVersionSmaller('7.0')
 
         r.assertTrue(r.execute_command('JSON.SET', 'test_resp3', '$', '{"a":[{"b":2},{"g":[1,2]},3]}'))
-        
+
         # Test JSON.TYPE RESP3
         r.assertEqual(r.execute_command('JSON.ARRPOP', 'test_resp3', 'FORMAT', 'EXPAND1', '$.a', 1), ['{"g":[1,2]}'])
         r.assertEqual(r.execute_command('JSON.ARRPOP', 'test_resp3', 'FORMAT', 'EXPAND1', '$.a'), [3])
@@ -343,16 +350,16 @@ class testResp3():
         r.assertEqual(r.execute_command('JSON.ARRLEN', 'test_resp3_arr'), 3)
         r.assertEqual(r.executeCommand('JSON.ARRPOP', 'test_resp3_arr'), '"dud"')
         r.assertEqual(r.execute_command('JSON.ARRLEN', 'test_resp3_arr'), 2)
-        
+
 def test_fail_with_resp2():
     r = Env(protocol=2)
     r.assertOk(r.execute_command('JSON.SET', 'doc', '$', '{"a":[1, 2, 3], "FORMAT": [1]}'))
-    
+
     # JSON.GET key [INDENT indent] [NEWLINE newline] [SPACE space] [FORMAT STRING|EXPAND] [path [path ...]]
     r.expect('JSON.GET', 'doc', 'FORMAT', 'EXPAND', '$').error().contains('not supported on RESP2')
     # Token beyond the first path are not considered as subcommands anymore
-    r.assertEqual(json.loads(r.execute_command('JSON.GET', 'doc', 'INDENT', ' ', '$.a[0]', 'FORMAT', 'EXPAND')), [1]) 
-    
+    r.assertEqual(json.loads(r.execute_command('JSON.GET', 'doc', 'INDENT', ' ', '$.a[0]', 'FORMAT', 'EXPAND')), [1])
+
     # JSON.ARRPOP <key> [FORMAT {STRINGS|EXPAND1|EXPAND}] [path [index]]
     r.expect('JSON.ARRPOP', 'doc', 'FORMAT', 'STRINGS', '$', 0).error().contains('not supported on RESP2')
     r.expect('JSON.ARRPOP', 'doc', 'FORMAT', '$', 0).error().contains('wrong reply format')

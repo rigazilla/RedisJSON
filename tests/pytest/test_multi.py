@@ -14,6 +14,7 @@ from RLTest import Defaults
 from functools import reduce
 
 Defaults.decode_responses = True
+Defaults.protocol = 3
 
 # ----------------------------------------------------------------------------------------------
 
@@ -157,7 +158,6 @@ def testForgetCommand(env):
 
 def testSetAndGetCommands(env):
     """Test REJSON.SET command"""
-    """Test REJSON.GET command"""
 
     r = env
     # Test set and get on large nested key
