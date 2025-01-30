@@ -13,6 +13,8 @@ from redis.client import NEVER_DECODE
 from RLTest import Defaults
 
 Defaults.decode_responses = True
+Defaults.protocol = 3
+
 
 # ----------------------------------------------------------------------------------------------
 
