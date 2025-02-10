@@ -36,7 +36,8 @@ python3 -m RLTest -v --existing-env-addr 127.0.0.1:6379 --no-progress -t test:te
 # Fails setting $[0] on non object, object is not changed but instead of error returns nil
 ```
 
-
+```bash
+python3 -m RLTest -v --existing-env-addr 127.0.0.1:6379 --no-progress -t test_multi:testObjLenCommand
 
 [![GitHub issues](https://img.shields.io/github/release/RedisJSON/RedisJSON.svg)](https://github.com/RedisJSON/RedisJSON/releases/latest)
 [![CircleCI](https://circleci.com/gh/RedisJSON/RedisJSON/tree/master.svg?style=svg)](https://circleci.com/gh/RedisJSON/RedisJSON/tree/master)
